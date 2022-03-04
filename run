@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo
+./Middleware "$1" &
+pid=$!
+
+sleep 2
+
+wrk 'http://localhost:5000/?foo[bar]=baz' \
+  -d 3 \
+  -c 50 \
+  -t 8 \
+  | grep 'Requests/sec' \
+  | awk '{ print "  " $2 }'
+
+kill $pid
